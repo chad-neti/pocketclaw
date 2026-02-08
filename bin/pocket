@@ -1,2 +1,3 @@
 #!/bin/bash
-python3 -m pocketclaw "$@"
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+PYTHONPATH="$SCRIPT_DIR:$PYTHONPATH" python3 -m pocketclaw "$@"
