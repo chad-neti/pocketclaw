@@ -108,4 +108,4 @@ tools:
 # Shell & File Tools
 
 Core tools for executing commands, managing files, and making HTTP requests.
-These are the primary Layer 1 tools — prefer these over screen interaction whenever possible.
+These are the primary Layer 1 tools  - prefer these over screen interaction whenever possible.

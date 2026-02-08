@@ -27,15 +27,15 @@ Access phone features through Termux:API commands.
 
 ## Available Commands
 
-- `termux-battery-status` — Battery level and status
-- `termux-sms-send -n NUMBER BODY` — Send SMS
-- `termux-sms-list` — List SMS messages
-- `termux-location` — GPS coordinates
-- `termux-clipboard-get` / `termux-clipboard-set` — Clipboard
-- `termux-notification-list` — Read notifications
-- `termux-camera-photo` — Take a photo
-- `termux-torch on/off` — Flashlight
-- `termux-vibrate` — Vibrate
-- `termux-tts-speak TEXT` — Text to speech
-- `termux-wifi-connectioninfo` — WiFi info
-- `termux-telephony-call NUMBER` — Make a call
+- `termux-battery-status`  - Battery level and status
+- `termux-sms-send -n NUMBER BODY`  - Send SMS
+- `termux-sms-list`  - List SMS messages
+- `termux-location`  - GPS coordinates
+- `termux-clipboard-get` / `termux-clipboard-set`  - Clipboard
+- `termux-notification-list`  - Read notifications
+- `termux-camera-photo`  - Take a photo
+- `termux-torch on/off`  - Flashlight
+- `termux-vibrate`  - Vibrate
+- `termux-tts-speak TEXT`  - Text to speech
+- `termux-wifi-connectioninfo`  - WiFi info
+- `termux-telephony-call NUMBER`  - Make a call

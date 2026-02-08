@@ -12,7 +12,7 @@ REPO="chad-neti/pocketclaw"
 INSTALL_DIR="$HOME/.pocketclaw"
 APP_DIR="$INSTALL_DIR/app"
 
-# ── Colours ───────────────────────────────────────────────
+# -- Colours -----------------------------------------------
 RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 ok() { echo -e "  ${GREEN}[+]${NC} $1"; }
 err() { echo -e "  ${RED}[!]${NC} $1"; }
@@ -20,19 +20,19 @@ info() { echo -e "  ${CYAN}[*]${NC} $1"; }
 
 echo -e "\n${CYAN}${BOLD}PocketClaw${NC} installer\n"
 
-# ── Check we're in Termux ─────────────────────────────────
+# -- Check we're in Termux ---------------------------------
 if [ -z "$TERMUX_VERSION" ] && [ ! -d "/data/data/com.termux" ]; then
     err "This installer is designed for Termux on Android."
     err "Get Termux from F-Droid: https://f-droid.org/packages/com.termux/"
     exit 1
 fi
 
-# ── Update packages ───────────────────────────────────────
+# -- Update packages ---------------------------------------
 info "Updating packages..."
 pkg update -y -q 2>/dev/null && pkg upgrade -y -q 2>/dev/null
 ok "Packages updated"
 
-# ── Install Python & Git ──────────────────────────────────
+# -- Install Python & Git ----------------------------------
 for dep in python git; do
     if ! command -v $dep &>/dev/null; then
         info "Installing $dep..."
@@ -41,7 +41,7 @@ for dep in python git; do
 done
 ok "Python $(python3 --version 2>&1 | cut -d' ' -f2) + Git ready"
 
-# ── Check Termux:API ─────────────────────────────────────
+# -- Check Termux:API -------------------------------------
 if ! command -v termux-battery-status &>/dev/null; then
     echo ""
     info "Termux:API not found. Installing..."
@@ -59,7 +59,7 @@ if ! command -v termux-battery-status &>/dev/null; then
 fi
 ok "Termux:API detected"
 
-# ── Clone / Update repo ──────────────────────────────────
+# -- Clone / Update repo ----------------------------------
 if [ -d "$APP_DIR/.git" ]; then
     info "Updating existing install..."
     cd "$APP_DIR" && git pull -q
@@ -71,15 +71,15 @@ else
     ok "Downloaded"
 fi
 
-# ── Install Python deps ──────────────────────────────────
+# -- Install Python deps ----------------------------------
 info "Installing dependencies..."
 pip install -q -r "$APP_DIR/requirements.txt" 2>/dev/null
 ok "Dependencies installed (httpx, pyyaml)"
 
-# ── Create directories ────────────────────────────────────
+# -- Create directories ------------------------------------
 mkdir -p "$INSTALL_DIR"/{skills/custom,skills/community,memory/conversations,memory/summaries,logs}
 
-# ── Default config ────────────────────────────────────────
+# -- Default config ----------------------------------------
 if [ ! -f "$INSTALL_DIR/config.yaml" ]; then
     cp "$APP_DIR/config.default.yaml" "$INSTALL_DIR/config.yaml"
     ok "Config created"
@@ -87,7 +87,7 @@ else
     ok "Config exists, skipping"
 fi
 
-# ── Identity file ─────────────────────────────────────────
+# -- Identity file -----------------------------------------
 if [ ! -f "$INSTALL_DIR/memory/identity.md" ]; then
     cp "$APP_DIR/identity.default.md" "$INSTALL_DIR/memory/identity.md"
     ok "Identity seeded"
@@ -95,12 +95,12 @@ else
     ok "Identity exists, skipping"
 fi
 
-# ── Patch skills paths ───────────────────────────────────
+# -- Patch skills paths -----------------------------------
 python3 -c "
 import yaml
 from pathlib import Path
 cfg_path = Path.home() / '.pocketclaw' / 'config.yaml'
-cfg = yaml.safe_load(cfg_path.read_text())
+cfg = yaml.safe_load(cfg_path.read_text(encoding='utf-8'))
 cfg.setdefault('skills', {})['paths'] = [
     str(Path.home() / '.pocketclaw/app/skills/builtin'),
     str(Path.home() / '.pocketclaw/app/skills/official') if (Path.home() / '.pocketclaw/app/skills/official').exists() else '',
@@ -108,10 +108,10 @@ cfg.setdefault('skills', {})['paths'] = [
     str(Path.home() / '.pocketclaw/skills/custom'),
 ]
 cfg['skills']['paths'] = [p for p in cfg['skills']['paths'] if p]
-cfg_path.write_text(yaml.dump(cfg, default_flow_style=False))
+cfg_path.write_text(yaml.dump(cfg, default_flow_style=False), encoding='utf-8')
 " 2>/dev/null
 
-# ── Add to PATH ───────────────────────────────────────────
+# -- Add to PATH -------------------------------------------
 SHELL_RC="$HOME/.bashrc"
 [ -f "$HOME/.zshrc" ] && SHELL_RC="$HOME/.zshrc"
 
@@ -122,16 +122,16 @@ if ! grep -q "pocketclaw" "$SHELL_RC" 2>/dev/null; then
     ok "Added to PATH"
 fi
 
-# ── Make executable ───────────────────────────────────────
+# -- Make executable ---------------------------------------
 chmod +x "$APP_DIR/bin/pocket"
 
-# ── Storage access ────────────────────────────────────────
+# -- Storage access ----------------------------------------
 if [ ! -d "$HOME/storage" ]; then
     info "Setting up storage access..."
     termux-setup-storage 2>/dev/null || true
 fi
 
-# ── API key setup ─────────────────────────────────────────
+# -- API key setup -----------------------------------------
 echo ""
 echo -e "${CYAN}${BOLD}API Setup${NC}"
 echo ""
@@ -142,12 +142,12 @@ if [ -f "$INSTALL_DIR/.env" ] && grep -q "API_KEY=" "$INSTALL_DIR/.env" 2>/dev/n
 else
     echo "  Which AI provider?"
     echo ""
-    echo "    1. Anthropic (Claude) — recommended"
+    echo "    1. Anthropic (Claude) -recommended"
     echo "    2. OpenAI (GPT-4o)"
     echo "    3. DeepSeek"
     echo "    4. Google (Gemini)"
     echo "    5. Groq (Llama)"
-    echo "    6. Ollama (local — no key needed)"
+    echo "    6. Ollama (local -no key needed)"
     echo ""
     read -p "  > " PROVIDER_CHOICE
     echo ""
@@ -166,14 +166,14 @@ else
 import yaml
 from pathlib import Path
 cfg_path = Path.home() / '.pocketclaw' / 'config.yaml'
-cfg = yaml.safe_load(cfg_path.read_text())
+cfg = yaml.safe_load(cfg_path.read_text(encoding='utf-8'))
 cfg.setdefault('llm', {})['provider'] = '$PROVIDER'
 cfg['llm']['model'] = '$MODEL'
-cfg_path.write_text(yaml.dump(cfg, default_flow_style=False))
+cfg_path.write_text(yaml.dump(cfg, default_flow_style=False), encoding='utf-8')
 " 2>/dev/null
 
     if [ "$PROVIDER" = "ollama" ]; then
-        ok "Ollama selected — no API key needed"
+        ok "Ollama selected -no API key needed"
         echo "  Make sure Ollama is running: ollama serve"
     elif [ -n "$ENV_NAME" ]; then
         read -p "  Paste your API key: " API_KEY
@@ -208,15 +208,15 @@ except: sys.exit(1)
                 echo -e "  ${RED}[!]${NC} Couldn't verify (may still work)"
             fi
         else
-            err "No key entered — add it later: echo '${ENV_NAME}=your-key' > ~/.pocketclaw/.env"
+            err "No key entered -add it later: echo '${ENV_NAME}=your-key' > ~/.pocketclaw/.env"
         fi
     fi
 fi
 
-# ── Source PATH so pocket works immediately ───────────────
+# -- Source PATH so pocket works immediately ---------------
 export PATH="$APP_DIR/bin:$PATH"
 
-# ── Done ──────────────────────────────────────────────────
+# -- Done --------------------------------------------------
 echo ""
 echo -e "${GREEN}${BOLD}PocketClaw installed!${NC}"
 echo ""

@@ -1,7 +1,7 @@
 ---
 name: termux
 version: 1.0.0
-description: Termux environment mastery — packages, storage, environments, troubleshooting
+description: Termux environment mastery  - packages, storage, environments, troubleshooting
 author: pocketclaw
 layer: 1
 category: core
@@ -10,7 +10,7 @@ category: core
 # Termux Environment Guide
 
 You are running inside Termux on Android. This is NOT a standard Linux box.
-Memorise these differences — they matter for every command you run.
+Memorise these differences  - they matter for every command you run.
 
 ## Key Paths
 

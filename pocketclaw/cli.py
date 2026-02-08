@@ -20,7 +20,7 @@ async def main(args=None):
         onboard()
         config = Config()  # reload after onboarding
         if _needs_setup(config):
-            print("Setup incomplete — run 'pocket onboard' to try again.")
+            print("Setup incomplete - run 'pocket onboard' to try again.")
             return
 
     if not args:

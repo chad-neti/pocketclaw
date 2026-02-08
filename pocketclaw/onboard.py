@@ -15,17 +15,17 @@ PROVIDERS = [
     ("deepseek", "DeepSeek", "DEEPSEEK_API_KEY", "deepseek-chat"),
     ("google", "Google (Gemini)", "GOOGLE_API_KEY", "gemini-2.0-flash"),
     ("groq", "Groq (Llama)", "GROQ_API_KEY", "llama-3.3-70b-versatile"),
-    ("ollama", "Ollama (local — no key needed)", "OLLAMA_API_KEY", "llama3.2"),
+    ("ollama", "Ollama (local - no key needed)", "OLLAMA_API_KEY", "llama3.2"),
 ]
 
 
 def run():
     print(f"\n{C}{B}PocketClaw{R} setup\n")
 
-    # ── Name ──────────────────────────────────────────────
+    # -- Name ----------------------------------------------
     name = input(f"  What's your name? {B}>{R} ").strip() or "User"
 
-    # ── Provider ──────────────────────────────────────────
+    # -- Provider ------------------------------------------
     print(f"\n  Which AI provider?\n")
     for i, (_, label, _, _) in enumerate(PROVIDERS, 1):
         print(f"    {i}. {label}")
@@ -47,7 +47,7 @@ def run():
         provider, _, env_name, model = PROVIDERS[idx]
         if provider == "ollama":
             api_key = ""
-            print(f"\n  {G}[+]{R} Ollama — no API key needed.")
+            print(f"\n  {G}[+]{R} Ollama - no API key needed.")
         else:
             api_key = input(f"\n  Paste your API key: {B}>{R} ").strip()
         base_url = None
@@ -56,7 +56,7 @@ def run():
         api_key = input(f"\n  Paste your Anthropic API key: {B}>{R} ").strip()
         base_url = None
 
-    # ── Test connection ───────────────────────────────────
+    # -- Test connection -----------------------------------
     if api_key and provider != "ollama":
         print(f"\n  Testing connection...", end=" ", flush=True)
         if _test_key(provider, api_key, model, base_url):
@@ -64,7 +64,7 @@ def run():
         else:
             print(f"{Y}couldn't verify (may still work){R}")
 
-    # ── Vibe ──────────────────────────────────────────────
+    # -- Vibe ----------------------------------------------
     print(f"\n  Pick a vibe:\n")
     print(f"    1. Sharp & efficient (minimal chat, maximum action)")
     print(f"    2. Friendly & helpful (balanced)")
@@ -72,7 +72,7 @@ def run():
 
     vibe = input(f"\n  {B}>{R} ").strip()
 
-    # ── Save everything ───────────────────────────────────
+    # -- Save everything -----------------------------------
     _save_config(provider, api_key, model, base_url)
     _save_identity(name, vibe)
     _save_env(provider, api_key)
@@ -124,7 +124,7 @@ def _save_config(provider, api_key, model, base_url):
     config.set("llm.model", model)
     if base_url:
         config.set("llm.base_url", base_url)
-    # Don't save API key to config — keep it in .env
+    # Don't save API key to config - keep it in .env
     config.save()
 
 

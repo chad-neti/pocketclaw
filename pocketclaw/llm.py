@@ -50,7 +50,7 @@ class LLMConnector:
             async for c in self._stream_openai(system, messages, tools):
                 yield c
 
-    # ── Anthropic ─────────────────────────────────────────────
+    # -- Anthropic ---------------------------------------------
 
     def _anth_headers(self):
         return {
@@ -140,7 +140,7 @@ class LLMConnector:
             "input_schema": {"type": "object", "properties": props, "required": req},
         }
 
-    # ── OpenAI-compatible ─────────────────────────────────────
+    # -- OpenAI-compatible -------------------------------------
 
     def _oai_headers(self):
         return {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}

@@ -72,8 +72,8 @@ For controlling Android apps that don't have APIs.
 
 ## Usage Pattern
 
-1. `screen_read` — see what's on screen
-2. `screen_tap_element` — interact with elements by name
-3. `screenshot` — only if screen_read can't parse the UI
+1. `screen_read`  - see what's on screen
+2. `screen_tap_element`  - interact with elements by name
+3. `screenshot`  - only if screen_read can't parse the UI
 
 Layer 2 (accessibility) is always faster than Layer 3 (screenshots).
