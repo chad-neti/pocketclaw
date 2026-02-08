@@ -1,0 +1,10 @@
+.env
+*.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+logs/
+mock_termux/
+*:Zone.Identifier

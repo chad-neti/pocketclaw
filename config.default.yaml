@@ -1,0 +1,39 @@
+llm:
+  provider: anthropic
+  api_key: ""
+  model: claude-sonnet-4-20250514
+  max_tokens: 4096
+  temperature: 0.3
+
+interfaces:
+  terminal: true
+
+skills:
+  paths:
+    - ~/.pocketclaw/app/skills/builtin
+    - ~/.pocketclaw/app/skills/official
+    - ~/.pocketclaw/skills/community
+    - ~/.pocketclaw/skills/custom
+  disabled: []
+
+memory:
+  path: ~/.pocketclaw/memory
+  max_conversation_messages: 50
+  auto_summarise: true
+
+confirm:
+  file_delete: true
+  send_messages: true
+  shell_commands: false
+  screen_actions: false
+  money: true
+
+display:
+  color: true
+  streaming: true
+  show_tool_calls: true
+
+advanced:
+  max_tool_iterations: 50
+  tool_timeout: 30
+  screenshot_scale: 0.5
