@@ -9,12 +9,12 @@ INSTALL_DIR="$HOME/.pocketclaw"
 APP_DIR="$INSTALL_DIR/app"
 
 # ── Colours ───────────────────────────────────────────────
-RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; NC='\033[0m'
+RED='\033[0;31m'; GREEN='\033[0;32m'; CYAN='\033[0;36m'; BOLD='\033[1m'; NC='\033[0m'
 ok() { echo -e "  ${GREEN}[+]${NC} $1"; }
 err() { echo -e "  ${RED}[!]${NC} $1"; }
 info() { echo -e "  ${CYAN}[*]${NC} $1"; }
 
-echo -e "\n${CYAN}PocketClaw${NC} installer\n"
+echo -e "\n${CYAN}${BOLD}PocketClaw${NC} installer\n"
 
 # ── Check we're in Termux ─────────────────────────────────
 if [ -z "$TERMUX_VERSION" ] && [ ! -d "/data/data/com.termux" ]; then
@@ -40,16 +40,18 @@ ok "Python $(python3 --version 2>&1 | cut -d' ' -f2) + Git ready"
 # ── Check Termux:API ─────────────────────────────────────
 if ! command -v termux-battery-status &>/dev/null; then
     echo ""
-    err "Termux:API not found."
-    echo ""
-    echo "  Install it from F-Droid:"
-    echo "  https://f-droid.org/packages/com.termux.api/"
-    echo ""
-    echo "  Then install the bridge package:"
-    echo "    pkg install termux-api"
-    echo ""
-    echo "  Re-run this installer after."
-    exit 1
+    info "Termux:API not found. Installing..."
+    pkg install -y termux-api 2>/dev/null || true
+    if ! command -v termux-battery-status &>/dev/null; then
+        echo ""
+        err "Termux:API still not found."
+        echo ""
+        echo "  You need the Termux:API app from F-Droid:"
+        echo "  https://f-droid.org/packages/com.termux.api/"
+        echo ""
+        echo "  Install the app, then re-run this installer."
+        exit 1
+    fi
 fi
 ok "Termux:API detected"
 
@@ -68,7 +70,7 @@ fi
 # ── Install Python deps ──────────────────────────────────
 info "Installing dependencies..."
 pip install -q -r "$APP_DIR/requirements.txt" 2>/dev/null
-ok "Dependencies installed"
+ok "Dependencies installed (httpx, pyyaml)"
 
 # ── Create directories ────────────────────────────────────
 mkdir -p "$INSTALL_DIR"/{skills/custom,skills/community,memory/conversations,memory/summaries,logs}
@@ -76,21 +78,20 @@ mkdir -p "$INSTALL_DIR"/{skills/custom,skills/community,memory/conversations,mem
 # ── Default config ────────────────────────────────────────
 if [ ! -f "$INSTALL_DIR/config.yaml" ]; then
     cp "$APP_DIR/config.default.yaml" "$INSTALL_DIR/config.yaml"
-    ok "Config created at ~/.pocketclaw/config.yaml"
+    ok "Config created"
 else
     ok "Config exists, skipping"
 fi
 
-# ── Identity file (the heart) ─────────────────────────────
+# ── Identity file ─────────────────────────────────────────
 if [ ! -f "$INSTALL_DIR/memory/identity.md" ]; then
     cp "$APP_DIR/identity.default.md" "$INSTALL_DIR/memory/identity.md"
-    ok "Identity seeded at ~/.pocketclaw/memory/identity.md"
+    ok "Identity seeded"
 else
     ok "Identity exists, skipping"
 fi
 
-# ── Update skills paths to point at install ───────────────
-# Patch config to use installed paths
+# ── Patch skills paths ───────────────────────────────────
 python3 -c "
 import yaml
 from pathlib import Path
@@ -126,17 +127,100 @@ if [ ! -d "$HOME/storage" ]; then
     termux-setup-storage 2>/dev/null || true
 fi
 
+# ── API key setup ─────────────────────────────────────────
+echo ""
+echo -e "${CYAN}${BOLD}API Setup${NC}"
+echo ""
+
+# Skip if key already configured
+if [ -f "$INSTALL_DIR/.env" ] && grep -q "API_KEY=" "$INSTALL_DIR/.env" 2>/dev/null; then
+    ok "API key already configured"
+else
+    echo "  Which AI provider?"
+    echo ""
+    echo "    1. Anthropic (Claude) — recommended"
+    echo "    2. OpenAI (GPT-4o)"
+    echo "    3. DeepSeek"
+    echo "    4. Google (Gemini)"
+    echo "    5. Groq (Llama)"
+    echo "    6. Ollama (local — no key needed)"
+    echo ""
+    read -p "  > " PROVIDER_CHOICE
+    echo ""
+
+    case "$PROVIDER_CHOICE" in
+        2) PROVIDER="openai";   ENV_NAME="OPENAI_API_KEY";   MODEL="gpt-4o" ;;
+        3) PROVIDER="deepseek"; ENV_NAME="DEEPSEEK_API_KEY"; MODEL="deepseek-chat" ;;
+        4) PROVIDER="google";   ENV_NAME="GOOGLE_API_KEY";   MODEL="gemini-2.0-flash" ;;
+        5) PROVIDER="groq";     ENV_NAME="GROQ_API_KEY";     MODEL="llama-3.3-70b-versatile" ;;
+        6) PROVIDER="ollama";   ENV_NAME="";                 MODEL="llama3.2" ;;
+        *) PROVIDER="anthropic"; ENV_NAME="ANTHROPIC_API_KEY"; MODEL="claude-sonnet-4-20250514" ;;
+    esac
+
+    # Update config with chosen provider/model
+    python3 -c "
+import yaml
+from pathlib import Path
+cfg_path = Path.home() / '.pocketclaw' / 'config.yaml'
+cfg = yaml.safe_load(cfg_path.read_text())
+cfg.setdefault('llm', {})['provider'] = '$PROVIDER'
+cfg['llm']['model'] = '$MODEL'
+cfg_path.write_text(yaml.dump(cfg, default_flow_style=False))
+" 2>/dev/null
+
+    if [ "$PROVIDER" = "ollama" ]; then
+        ok "Ollama selected — no API key needed"
+        echo "  Make sure Ollama is running: ollama serve"
+    elif [ -n "$ENV_NAME" ]; then
+        read -p "  Paste your API key: " API_KEY
+        echo ""
+        if [ -n "$API_KEY" ]; then
+            echo "${ENV_NAME}=${API_KEY}" > "$INSTALL_DIR/.env"
+            ok "API key saved"
+
+            # Quick connection test
+            info "Testing connection..."
+            if python3 -c "
+import httpx, sys
+key = '$API_KEY'
+provider = '$PROVIDER'
+model = '$MODEL'
+try:
+    if provider == 'anthropic':
+        r = httpx.post('https://api.anthropic.com/v1/messages', headers={
+            'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json',
+        }, json={'model': model, 'max_tokens': 10, 'messages': [{'role': 'user', 'content': 'hi'}]}, timeout=10)
+    else:
+        urls = {'openai': 'https://api.openai.com/v1', 'deepseek': 'https://api.deepseek.com/v1',
+                'groq': 'https://api.groq.com/openai/v1', 'google': 'https://generativelanguage.googleapis.com/v1beta'}
+        r = httpx.post(urls.get(provider, 'https://api.openai.com/v1') + '/chat/completions', headers={
+            'Authorization': f'Bearer {key}', 'Content-Type': 'application/json',
+        }, json={'model': model, 'max_tokens': 10, 'messages': [{'role': 'user', 'content': 'hi'}]}, timeout=10)
+    sys.exit(0 if r.status_code == 200 else 1)
+except: sys.exit(1)
+" 2>/dev/null; then
+                ok "Connected to $MODEL"
+            else
+                echo -e "  ${RED}[!]${NC} Couldn't verify (may still work)"
+            fi
+        else
+            err "No key entered — add it later: echo '${ENV_NAME}=your-key' > ~/.pocketclaw/.env"
+        fi
+    fi
+fi
+
+# ── Source PATH so pocket works immediately ───────────────
+export PATH="$APP_DIR/bin:$PATH"
+
 # ── Done ──────────────────────────────────────────────────
 echo ""
-echo -e "${GREEN}PocketClaw installed!${NC}"
+echo -e "${GREEN}${BOLD}PocketClaw installed!${NC}"
 echo ""
-echo "  Get started:"
-echo "    1. Edit your config:  nano ~/.pocketclaw/config.yaml"
-echo "       (add your API key under llm.api_key)"
+echo "  Start chatting:"
+echo -e "    ${BOLD}source ~/.bashrc && pocket${NC}"
 echo ""
-echo "    2. Start chatting:    source ~/.bashrc && pocket"
-echo ""
-echo "  Or one-shot:            pocket \"what's my battery at?\""
+echo "  Or one-shot:"
+echo "    pocket \"what's my battery at?\""
 echo ""
 echo "  Commands:"
 echo "    pocket help            Full command list"
