@@ -10,7 +10,7 @@ class Supervisor:
     def start(self):
         subprocess.run(["termux-wake-lock"], capture_output=True)
         PID_FILE.parent.mkdir(parents=True, exist_ok=True)
-        PID_FILE.write_text(str(os.getpid()))
+        PID_FILE.write_text(str(os.getpid()), encoding='utf-8')
 
     def stop(self):
         subprocess.run(["termux-wake-unlock"], capture_output=True)
@@ -21,7 +21,7 @@ class Supervisor:
     def is_running():
         if not PID_FILE.exists():
             return False
-        pid = int(PID_FILE.read_text().strip())
+        pid = int(PID_FILE.read_text(encoding='utf-8').strip())
         try:
             os.kill(pid, 0)
             return True
@@ -32,7 +32,7 @@ class Supervisor:
     @staticmethod
     def get_pid():
         if PID_FILE.exists():
-            return int(PID_FILE.read_text().strip())
+            return int(PID_FILE.read_text(encoding='utf-8').strip())
         return None
 
     @staticmethod

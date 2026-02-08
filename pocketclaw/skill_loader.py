@@ -43,7 +43,7 @@ class SkillLoader:
                 self.skills[skill.name] = skill
 
     def _parse(self, path):
-        text = path.read_text()
+        text = path.read_text(encoding='utf-8')
         if not text.startswith("---"):
             return None
         try:

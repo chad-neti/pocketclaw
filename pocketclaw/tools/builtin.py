@@ -31,7 +31,7 @@ async def run_python(code, timeout=30):
 async def read_file(path, max_lines=None):
     try:
         p = Path(path).expanduser()
-        text = p.read_text()
+        text = p.read_text(encoding='utf-8')
         if max_lines:
             text = "\n".join(text.split("\n")[: int(max_lines)])
         return text
@@ -43,7 +43,7 @@ async def write_file(path, content):
     try:
         p = Path(path).expanduser()
         p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(content)
+        p.write_text(content, encoding='utf-8')
         return f"Written {len(content)} bytes to {path}"
     except Exception as e:
         return f"Error: {e}"
@@ -52,13 +52,13 @@ async def write_file(path, content):
 async def edit_file(path, old_str, new_str):
     try:
         p = Path(path).expanduser()
-        text = p.read_text()
+        text = p.read_text(encoding='utf-8')
         count = text.count(old_str)
         if count == 0:
             return "Error: old_str not found in file"
         if count > 1:
             return f"Error: old_str found {count} times (must be unique)"
-        p.write_text(text.replace(old_str, new_str, 1))
+        p.write_text(text.replace(old_str, new_str, 1), encoding='utf-8')
         return "File edited successfully"
     except Exception as e:
         return f"Error: {e}"

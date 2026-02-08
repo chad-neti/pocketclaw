@@ -13,24 +13,24 @@ class MemoryStore:
     def get_conversation(self, conv_id):
         path = self.base / "conversations" / f"{conv_id}.json"
         if path.exists():
-            msgs = json.loads(path.read_text())
+            msgs = json.loads(path.read_text(encoding='utf-8'))
             return msgs[-self.max_messages:]
         return []
 
     def save_conversation(self, conv_id, messages):
         path = self.base / "conversations" / f"{conv_id}.json"
-        path.write_text(json.dumps(messages, indent=2, default=str))
+        path.write_text(encoding='utf-8', data=json.dumps(messages, indent=2, default=str))
 
     def get_identity(self):
         path = self.base / "identity.md"
-        return path.read_text() if path.exists() else ""
+        return path.read_text(encoding='utf-8') if path.exists() else ""
 
     def get_facts(self):
         path = self.base / "facts.json"
-        return json.loads(path.read_text()) if path.exists() else {}
+        return json.loads(path.read_text(encoding='utf-8')) if path.exists() else {}
 
     def save_facts(self, facts):
-        (self.base / "facts.json").write_text(json.dumps(facts, indent=2))
+        (self.base / "facts.json").write_text(encoding='utf-8', data=json.dumps(facts, indent=2))
 
     def get_context(self):
         parts = []

@@ -19,7 +19,7 @@ def _load_env(*search_paths):
     for p in search_paths:
         path = Path(p).expanduser()
         if path.exists():
-            for line in path.read_text().splitlines():
+            for line in path.read_text(encoding='utf-8').splitlines():
                 line = line.strip()
                 if not line or line.startswith("#") or "=" not in line:
                     continue
@@ -84,7 +84,7 @@ class Config:
 
         raw = {}
         if self.path.exists():
-            raw = yaml.safe_load(self.path.read_text()) or {}
+            raw = yaml.safe_load(self.path.read_text(encoding='utf-8')) or {}
         self._data = _merge(DEFAULTS, raw)
 
         # Auto-detect API key from env vars if not in config
@@ -116,7 +116,7 @@ class Config:
 
     def save(self):
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self.path.write_text(yaml.dump(self._data, default_flow_style=False))
+        self.path.write_text(yaml.dump(self._data, default_flow_style=False), encoding='utf-8')
 
     @property
     def data(self):

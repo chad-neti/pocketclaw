@@ -141,7 +141,7 @@ def _save_env(provider, api_key):
     env_var = env_names.get(provider, "API_KEY")
     env_path = POCKETCLAW_DIR / ".env"
     env_path.parent.mkdir(parents=True, exist_ok=True)
-    env_path.write_text(f"{env_var}={api_key}\n")
+    env_path.write_text(f"{env_var}={api_key}\n", encoding='utf-8')
 
 
 def _save_identity(name, vibe):
@@ -152,7 +152,7 @@ def _save_identity(name, vibe):
     # Read default template
     default = Path(__file__).parent.parent / "identity.default.md"
     if default.exists():
-        template = default.read_text()
+        template = default.read_text(encoding='utf-8')
     else:
         template = "# PocketClaw\n\n## About Me\n- Name: {name}\n"
 
@@ -171,7 +171,7 @@ def _save_identity(name, vibe):
             "- Match the user's energy.\n- Be warm but not chatty. Light humour is fine.",
         )
 
-    identity_path.write_text(template)
+    identity_path.write_text(template, encoding='utf-8')
 
 
 def _save_facts(name):
@@ -180,6 +180,6 @@ def _save_facts(name):
     facts_path.parent.mkdir(parents=True, exist_ok=True)
     facts = {}
     if facts_path.exists():
-        facts = json.loads(facts_path.read_text())
+        facts = json.loads(facts_path.read_text(encoding='utf-8'))
     facts["user_name"] = name
-    facts_path.write_text(json.dumps(facts, indent=2))
+    facts_path.write_text(json.dumps(facts, indent=2), encoding='utf-8')
