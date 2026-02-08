@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License"></a>
-  <a href="https://github.com/pocketclaw/pocketclaw/releases"><img src="https://img.shields.io/github/v/release/pocketclaw/pocketclaw?include_prereleases&style=for-the-badge" alt="GitHub release"></a>
+  <a href="https://github.com/chad-neti/pocketclaw/releases"><img src="https://img.shields.io/github/v/release/pocketclaw/pocketclaw?include_prereleases&style=for-the-badge" alt="GitHub release"></a>
 </p>
 
 **PocketClaw** is a personal AI agent that runs on Android via [Termux](https://termux.dev). It gives any LLM full control of your phone and a Linux environment through natural language. Model-agnostic, lightweight, extensible, and installable in under 2 minutes.
@@ -22,7 +22,7 @@ No servers. No telemetry. No accounts. Everything runs locally on your device.
 **Prerequisites:** [Termux](https://f-droid.org/packages/com.termux/) + [Termux:API](https://f-droid.org/packages/com.termux.api/) from F-Droid (not the Play Store). An API key from any supported provider.
 
 ```bash
-curl -sL https://raw.githubusercontent.com/pocketclaw/pocketclaw/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/chad-neti/pocketclaw/main/install.sh | bash
 ```
 
 Takes ~2 minutes. Then run `pocket` — the setup wizard asks for your provider and API key on first launch.
@@ -37,7 +37,7 @@ pocket doctor                   # verify everything works
 
 ```bash
 # Install
-curl -sL https://raw.githubusercontent.com/pocketclaw/pocketclaw/main/install.sh | bash
+curl -sL https://raw.githubusercontent.com/chad-neti/pocketclaw/main/install.sh | bash
 source ~/.bashrc
 
 # Configure (add your API key)

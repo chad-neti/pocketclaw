@@ -1,10 +1,10 @@
 #!/bin/bash
 # PocketClaw installer for Termux
-# Usage: curl -sL https://raw.githubusercontent.com/pocketclaw/pocketclaw/main/install.sh | bash
+# Usage: curl -sL https://raw.githubusercontent.com/chad-neti/pocketclaw/main/install.sh | bash
 
 set -e
 
-REPO="pocketclaw/pocketclaw"
+REPO="chad-neti/pocketclaw"
 INSTALL_DIR="$HOME/.pocketclaw"
 APP_DIR="$INSTALL_DIR/app"
 
