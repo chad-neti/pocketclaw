@@ -4,6 +4,10 @@
 
 set -e
 
+# Fix encoding for Termux (defaults to ASCII on some devices)
+export LANG=en_US.UTF-8
+export PYTHONIOENCODING=utf-8
+
 REPO="chad-neti/pocketclaw"
 INSTALL_DIR="$HOME/.pocketclaw"
 APP_DIR="$INSTALL_DIR/app"
